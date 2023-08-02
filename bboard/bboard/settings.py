@@ -89,6 +89,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'main.AdvUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
