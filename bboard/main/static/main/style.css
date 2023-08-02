@@ -1,3 +1,7 @@
 .root {
     font-size: larger;
 }
+
+.form-container {
+    max-width: 600px;
+}
