@@ -4,15 +4,20 @@ from .views import (
     IndexView, OtherView, BBLoginView,
     ProfileView, BBLogoutView, ChangeUserInfoView,
     BBPasswordChangeView, RegisterUserView,
-    RegisterDoneView
+    RegisterDoneView, ActivateUserView
 )
 
 app_name = 'main'
 urlpatterns = [
     path(
+        'accounts/register/activate/<str:sign>/',
+        ActivateUserView.as_view(),
+        name='register_activate'
+    ),
+    path(
         'accounts/register/done',
         RegisterDoneView.as_view(),
-        name='register'
+        name='register_done'
     ),
     path('accounts/register/', RegisterUserView.as_view(), name='register'),
     path(

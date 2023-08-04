@@ -25,6 +25,7 @@
                 data-toggle="dropdown" role="button"
                 aria-haspopup="true" aria-expanded="false">Профиль</a>
                 <div class="dropdown-menu dropdown-menu-right">
+                    <h4 class="dropdown-header" style="font-size: larger; color: black;">{{ user.username }}</h4>
                     <a href="{% url 'main:profile' %}" class="dropdown-item">Мои объявления</a>
                     <a href="{% url 'main:profile_change' %}" class="dropdown-item">Изменить личные данные</a>
                     <a href="{% url 'main:password_change' %}" class="dropdown-item">Изменить пароль</a>

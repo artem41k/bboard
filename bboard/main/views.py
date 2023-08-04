@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.signing import BadSignature
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView, CreateView
@@ -8,6 +9,7 @@ from django.views.generic import TemplateView
 
 from .forms import ChangeUserInfoForm, RegisterUserForm
 from .models import AdvUser
+from .utilities import signer
 
 
 class IndexView(TemplateView):
@@ -60,3 +62,19 @@ class RegisterUserView(CreateView):
 
 class RegisterDoneView(TemplateView):
     template_name = 'auth/register_done.html'
+
+class ActivateUserView(TemplateView):
+    def get_template_names(self):
+        try:
+            username = signer.unsign(self.kwargs['sign'])
+        except BadSignature:
+            return ['auth/bad_signature.html']
+        
+        user = get_object_or_404(AdvUser, username=username)
+        if user.is_activated:
+            return ['auth/user_is_activated.html']
+        else:
+            user.is_active = True
+            user.is_activated = True
+            user.save()
+            return ['auth/activation_done.html']
