@@ -15,19 +15,25 @@ from .utilities import signer
 class IndexView(TemplateView):
     template_name = 'main/index.html'
 
+
 class OtherView(TemplateView):
     def get_template_names(self):
         return [f"main/{self.kwargs['page']}.html"]
+
+# Auth & Profile Views
 
 
 class BBLoginView(LoginView):
     template_name = 'auth/login.html'
 
+
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'auth/profile.html'
 
+
 class BBLogoutView(LoginRequiredMixin, LogoutView):
     template_name = 'auth/logout.html'
+
 
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AdvUser
@@ -45,6 +51,7 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
 
+
 class BBPasswordChangeView(
     SuccessMessageMixin,
     LoginRequiredMixin,
@@ -54,14 +61,17 @@ class BBPasswordChangeView(
     success_url = reverse_lazy('main:profile')
     success_message = 'Пароль пользователя изменен'
 
+
 class RegisterUserView(CreateView):
     model = AdvUser
     template_name = 'auth/register_user.html'
     form_class = RegisterUserForm
     success_url = reverse_lazy('main:register_done')
 
+
 class RegisterDoneView(TemplateView):
     template_name = 'auth/register_done.html'
+
 
 class ActivateUserView(TemplateView):
     def get_template_names(self):
@@ -69,7 +79,7 @@ class ActivateUserView(TemplateView):
             username = signer.unsign(self.kwargs['sign'])
         except BadSignature:
             return ['auth/bad_signature.html']
-        
+
         user = get_object_or_404(AdvUser, username=username)
         if user.is_activated:
             return ['auth/user_is_activated.html']
