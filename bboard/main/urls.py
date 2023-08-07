@@ -5,10 +5,32 @@ from .views import (
     ProfileView, BBLogoutView, ChangeUserInfoView,
     BBPasswordChangeView, RegisterUserView,
     RegisterDoneView, ActivateUserView, DeleteUserView,
+    BBPasswordResetView, BBPasswordResetDoneView,
+    BBPasswordResetConfirmView, BBPasswordResetCompleteView,
 )
 
 app_name = 'main'
 urlpatterns = [
+    path(
+        'accounts/reset-password/complete',
+        BBPasswordResetCompleteView.as_view(),
+        name='password_reset_complete',
+    ),
+    path(
+        'accounts/reset/<str:uidb64>/<str:token>/',
+        BBPasswordResetConfirmView.as_view(),
+        name='password_reset_confirm',
+    ),
+    path(
+        'accounts/reset-password/done',
+        BBPasswordResetDoneView.as_view(),
+        name='password_reset_done',
+    ),
+    path(
+        'accounts/reset-password',
+        BBPasswordResetView.as_view(),
+        name='reset_password',
+    ),
     path(
         'accounts/register/activate/<str:sign>/',
         ActivateUserView.as_view(),
