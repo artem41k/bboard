@@ -133,3 +133,7 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         if not queryset:
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
+
+
+class ByRubricView(TemplateView):
+    pass
