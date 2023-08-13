@@ -102,6 +102,9 @@ class Bb(models.Model):
             add_img.delete()
         super().delete(*args, **kwargs)
 
+    def __str__(self):
+        return self.title
+
 
 class AdditionalImage(models.Model):
     bb = models.ForeignKey(
