@@ -7,13 +7,17 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView)
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.signing import BadSignature
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView, CreateView, DeleteView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
+from django.views.generic.edit import (
+    UpdateView, CreateView, DeleteView, FormMixin
+)
+from django.views.generic.list import ListView
 
-from .forms import ChangeUserInfoForm, RegisterUserForm
-from .models import AdvUser
+from .forms import ChangeUserInfoForm, RegisterUserForm, SearchForm
+from .models import AdvUser, Bb, SubRubric
 from .utilities import signer
 
 
@@ -135,5 +139,34 @@ class DeleteUserView(LoginRequiredMixin, DeleteView):
         return get_object_or_404(queryset, pk=self.user_id)
 
 
-class ByRubricView(TemplateView):
-    pass
+class ByRubricView(FormMixin, ListView):
+    form_class = SearchForm
+    template_name = 'main/by_rubric.html'
+    paginate_by = 2
+    context_object_name = 'bbs'
+
+    def get_queryset(self):
+        bbs = Bb.objects.filter(is_active=True, rubric=self.kwargs['pk'])
+        if keyword := self.request.GET.get('keyword'):
+            # There's a bug with case-insensitive search in SQLite-type
+            # databases, but it works properly in PostgreSQL, and other dbs
+            q = Q(title__icontains=keyword) | Q(content__icontains=keyword)
+            bbs = bbs.filter(q)
+        return bbs
+
+    def get_initial(self):
+        return {'keyword': self.request.GET.get('keyword', '')}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rubric'] = get_object_or_404(SubRubric, pk=self.kwargs['pk'])
+        return context
+
+
+class BBDetailView(DetailView):
+    model = Bb
+    template_name = 'main/detail.html'
+    context_object_name = 'bb'
+
+    def get_queryset(self):
+        return Bb.objects.prefetch_related('additionalimage_set')

@@ -5,3 +5,10 @@
 .form-container {
     max-width: 600px;
 }
+
+img.main-image {
+    width: 300px;
+}
+img.additional-image {
+    width: 180px;
+}

@@ -7,7 +7,7 @@ from .views import (
     RegisterDoneView, ActivateUserView, DeleteUserView,
     BBPasswordResetView, BBPasswordResetDoneView,
     BBPasswordResetConfirmView, BBPasswordResetCompleteView,
-    ByRubricView,
+    ByRubricView, BBDetailView,
 )
 
 app_name = 'main'
@@ -61,6 +61,7 @@ urlpatterns = [
     path('accounts/profile/', ProfileView.as_view(), name='profile'),
     path('accounts/logout/', BBLogoutView.as_view(), name='logout'),
     path('accounts/login/', BBLoginView.as_view(), name='login'),
+    path('<int:rubric_pk>/<int:pk>/', BBDetailView.as_view(), name='detail'),
     path('<int:pk>/', ByRubricView.as_view(), name='by_rubric'),
     path('<str:page>/', OtherView.as_view(), name='other'),
     path('', IndexView.as_view(), name='index'),
