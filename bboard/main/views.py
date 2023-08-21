@@ -21,8 +21,13 @@ from .models import AdvUser, Bb, SubRubric
 from .utilities import signer
 
 
-class IndexView(TemplateView):
+class IndexView(ListView):
     template_name = 'main/index.html'
+    model = Bb
+    context_object_name = 'bbs'
+
+    def get_queryset(self):
+        return Bb.objects.filter(is_active=True)[:10]
 
 
 class OtherView(TemplateView):
