@@ -1,0 +1,40 @@
+{% extends 'layout/basic.html' %}
+
+{% load static %}
+{% load thumbnail %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<h2>{{ user.first_name }} {{ user.last_name }}</h2>
+{% if user.first_name or user.last_name %}
+<p style="color: gray; font-size: larger;">{{ user.username }}</p>
+{% endif %}
+<button class="my-5 btn btn-primary"><a href="{% url 'main:bb_add' %}" style="color: white;">Добавить объявление</a></button>
+<h3>Ваши объявления</h3>
+<ul class="list-unstyled">
+    {% for bb in bbs %}
+    <li class="media my-5 p-3 border">
+        {% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk as url %}
+        <a href="{{ url }}">
+        {% if bb.image %}
+        <img src="{% thumbnail bb.image 'default' %}" class="mr-3 inline-image">
+        {% else %}
+        <img src="{% static 'main/empty.png' %}" alt="Empty" class="mr-3 inline-image">
+        {% endif %}
+        </a>
+        <div class="media-body">
+            <p>Рубрика: {{ bb.rubric }}</p>
+            <h3><a href="{{ url }}">{{ bb.title }}</a></h3>
+            <div>{{ bb.content|linebreaksbr }}</div>
+            <p class="text-right font-weight-bold">{{ bb.price }}₽</p>
+            <p class="text-right font-italic">{{ bb.created_at }}</p>
+            <p class="text-right mt-2">
+                <a href="{% url 'main:bb_change' pk=bb.pk %}">Изменить</a>
+                <a href="{% url 'main:bb_delete' pk=bb.pk %}" class="ml-1">Удалить</a>
+            </p>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

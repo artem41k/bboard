@@ -1,22 +1,25 @@
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import (
-    LoginView, LogoutView, PasswordChangeView, PasswordResetView,
-    PasswordResetDoneView,  PasswordResetConfirmView,
-    PasswordResetCompleteView)
+from django.contrib.auth.views import (LoginView, LogoutView,
+                                       PasswordChangeView,
+                                       PasswordResetCompleteView,
+                                       PasswordResetConfirmView,
+                                       PasswordResetDoneView,
+                                       PasswordResetView)
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.signing import BadSignature
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-from django.views.generic import TemplateView, DetailView
-from django.views.generic.edit import (
-    UpdateView, CreateView, DeleteView, FormMixin
-)
+from django.urls import reverse_lazy, reverse
+from django.views.generic import DetailView, TemplateView
+from django.views.generic.edit import (CreateView, DeleteView, FormMixin,
+                                       UpdateView)
 from django.views.generic.list import ListView
 
-from .forms import ChangeUserInfoForm, RegisterUserForm, SearchForm
+from .forms import (AddImgFormSet, BbForm, ChangeUserInfoForm,
+                    RegisterUserForm, SearchForm)
 from .models import AdvUser, Bb, SubRubric
 from .utilities import signer
 
@@ -41,8 +44,13 @@ class BBLoginView(LoginView):
     template_name = 'auth/login.html'
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
-    template_name = 'auth/profile.html'
+class ProfileView(LoginRequiredMixin, ListView):
+    template_name = 'main/profile.html'
+    model = Bb
+    context_object_name = 'bbs'
+
+    def get_queryset(self):
+        return Bb.objects.filter(author=self.request.user.pk)
 
 
 class BBLogoutView(LoginRequiredMixin, LogoutView):
@@ -175,3 +183,68 @@ class BBDetailView(DetailView):
 
     def get_queryset(self):
         return Bb.objects.prefetch_related('additionalimage_set')
+
+
+class BBCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Bb
+    template_name = 'main/profile_bb_add.html'
+    form_class = BbForm
+    success_message = 'Объявление добавлено'
+    success_url = reverse_lazy('main:profile')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        formset = AddImgFormSet(
+            self.request.POST, self.request.FILES, instance=self.object
+        )
+        if formset.is_valid():
+            formset.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_initial(self):
+        init_dict = super().get_initial()
+        init_dict['author'] = self.request.user.pk
+        return init_dict
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["formset"] = AddImgFormSet()
+        return context
+
+
+class BBChangeView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Bb
+    template_name = 'main/profile_bb_change.html'
+    form_class = BbForm
+    success_message = 'Объявление изменено'
+
+    def get_success_url(self) -> str:
+        return reverse(
+            'main:detail', kwargs={
+                'rubric_pk': self.object.pk, 'pk': self.object.pk
+            }
+        )
+
+    def form_valid(self, form):
+        self.object = form.save()
+        formset = AddImgFormSet(
+            self.request.POST, self.request.FILES, instance=self.object
+        )
+        if formset.is_valid():
+            formset.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["formset"] = AddImgFormSet(instance=self.object)
+        return context
+
+
+class BBDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Bb
+    template_name = 'main/profile_bb_delete.html'
+    success_message = 'Объявление удалено'
+    success_url = reverse_lazy('main:profile')
+    context_object_name = 'bb'

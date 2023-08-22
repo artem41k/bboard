@@ -1,5 +1,8 @@
 {% extends 'layout/basic.html' %}
 
+{% load thumbnail %}
+{% load bootstrap4 %}
+
 {% block title %}{{ bb.title }} - {{ bb.rubric.name }}{% endblock %}
 
 {% block content %}
@@ -17,6 +20,12 @@
             <p>{{ bb.contacts }}</p>
             <p class="text-right font-italic">Добавлено {{ bb.created_at }}</p>
         </div>
+    </div>
+    <div class="row p-3">
+        {% url 'main:bb_change' pk=bb.pk as change_bb_url %}
+        {% url 'main:bb_delete' pk=bb.pk as delete_bb_url %}
+        {% bootstrap_button content='Изменить' button_class='btn-outline-primary mr-1' button_type="link" href=change_bb_url%}
+        {% bootstrap_button content='Удалить' button_class='btn-outline-danger mr-1' button_type="link" href=delete_bb_url%}
     </div>
 </div>
 {% if bb.additionalimage_set.all %}
