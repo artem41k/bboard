@@ -5,10 +5,16 @@
 .form-container {
     max-width: 600px;
 }
+.form-container-large {
+    max-width: 800px;
+}
 
 img.main-image {
     width: 300px;
 }
 img.additional-image {
+    width: 180px;
+}
+img.inline-image {
     width: 180px;
 }

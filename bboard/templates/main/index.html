@@ -12,9 +12,9 @@
         {% url 'main:detail' rubric_pk=bb.rubric.pk pk=bb.pk as url %}
         <a href="{{ url }}">
         {% if bb.image %}
-        <img src="{% thumbnail bb.image 'default' %}" class="mr-3">
+        <img src="{% thumbnail bb.image 'default' %}" class="mr-3 inline-image">
         {% else %}
-        <img src="{% static 'main/empty.png' %}" alt="Empty" class="mr-3">
+        <img src="{% static 'main/empty.png' %}" alt="Empty" class="mr-3 inline-image">
         {% endif %}
         </a>
         <div class="media-body">
