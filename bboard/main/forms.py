@@ -2,9 +2,11 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 
+from captcha.fields import CaptchaField
+
 from .apps import user_registered
 from .models import (
-    AdvUser, SuperRubric, SubRubric,
+    AdvUser, Comment, SuperRubric, SubRubric,
     Bb, AdditionalImage
 )
 
@@ -90,3 +92,17 @@ AddImgFormSet = forms.inlineformset_factory(
     Bb, AdditionalImage, fields='__all__',
     labels={"image": "Доп. изображение"}
 )
+
+
+class UserCommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        exclude = ('is_active',)
+        widgets = {'bb': forms.HiddenInput}
+
+
+class GuestCommentForm(UserCommentForm):
+    captcha = CaptchaField(
+        label='Введите текст с картинки',
+        error_messages={'invalid': 'Неправильный текст'}
+    )

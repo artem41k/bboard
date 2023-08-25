@@ -2,7 +2,8 @@ from django.contrib import admin
 import datetime
 
 from .forms import SubRubricForm
-from .models import AdvUser, SuperRubric, SubRubric, Bb, AdditionalImage
+from .models import (AdditionalImage, AdvUser, Bb, Comment, SubRubric,
+                     SuperRubric)
 from .utilities import send_activation_notification
 
 
@@ -96,3 +97,8 @@ class BbAdmin(admin.ModelAdmin):
         'is_active',
     )
     inlines = (AdditionalImageInline,)
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    readonly_fields = ('created_at',)

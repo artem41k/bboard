@@ -37,4 +37,23 @@
     {% endfor %}
 </div>
 {% endif %}
+<h4 class="my-3">Новый комментарий</h4>
+<form method="post" class="form-container">
+    {% csrf_token %}
+    {% bootstrap_form form layout='horizontal' %}
+    {% buttons submit='Добавить' %}{% endbuttons %}
+</form>
+<div class="mt-5">
+    {% if bb.comment_set.all %}
+    {% for comment in bb.comment_set.all %}
+    <div class="my-2 p-2 border">
+        <h5>{{ comment.author }}</h5>
+        <p>{{ comment.content }}</p>
+        <p class="text-right font-italic">{{ comment.created_at }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="font-italic">Комментариев пока нет</p>
+    {% endif %}
+</div>
 {% endblock %}

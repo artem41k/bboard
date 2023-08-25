@@ -12,14 +12,15 @@ from django.core.signing import BadSignature
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import (CreateView, DeleteView, FormMixin,
                                        UpdateView)
 from django.views.generic.list import ListView
 
 from .forms import (AddImgFormSet, BbForm, ChangeUserInfoForm,
-                    RegisterUserForm, SearchForm)
+                    GuestCommentForm, RegisterUserForm, SearchForm,
+                    UserCommentForm)
 from .models import AdvUser, Bb, SubRubric
 from .utilities import signer
 
@@ -176,13 +177,51 @@ class ByRubricView(FormMixin, ListView):
         return context
 
 
-class BBDetailView(DetailView):
+class BBDetailView(FormMixin, SuccessMessageMixin, DetailView):
     model = Bb
     template_name = 'main/detail.html'
     context_object_name = 'bb'
+    success_message = 'Комментарий добавлен'
 
     def get_queryset(self):
-        return Bb.objects.prefetch_related('additionalimage_set')
+        return Bb.objects.prefetch_related(
+            'additionalimage_set', 'comment_set'
+        )
+
+    def get_success_url(self):
+        return reverse(
+            'main:detail', kwargs={
+                'rubric_pk': self.object.rubric.pk,
+                'pk': self.object.pk
+            }
+        )
+
+    # Redefinition of the post method, needed to mix FormMixin and DetailView
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def get_form(self, form_class=None):
+        if self.request.user.is_authenticated:
+            form_class = UserCommentForm
+        else:
+            form_class = GuestCommentForm
+        return super().get_form(form_class)
+
+    def get_initial(self):
+        initial = {'bb': self.object}
+        if self.request.user.is_authenticated:
+            initial['author'] = self.request.user.username
+
+        return initial
 
 
 class BBCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
