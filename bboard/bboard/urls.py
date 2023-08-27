@@ -13,6 +13,7 @@ urlpatterns = [
         'favicon.ico/',
         RedirectView.as_view(url='/static/icons/favicon.png', permanent=True)
     ),
+    path('api/', include('api.urls')),
     path('', include('main.urls')),
 ]
 
