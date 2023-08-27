@@ -1,0 +1,14 @@
+Здравствуйте, {{ bb_author.username }}!
+
+Под вашим объявлением "{{ comment.bb.title }}" оставлен новый комментарий:
+
+От: {{ comment.author }}
+
+{{ comment.content }}
+
+{{ comment.created_at }}
+
+Ссылка на объявление:
+{{ host }}{% url 'main:detail' rubric_pk=comment.bb.rubric.pk pk=comment.bb.pk %}
+
+С уважением, администратор сайта Bboard
