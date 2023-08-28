@@ -1,7 +1,9 @@
 from django.urls import path
 
-from .views import BbList
+from .views import BbListView, BbDetailView, CommentsView
 
 urlpatterns = [
-    path('bbs/', BbList.as_view()),
+    path("bbs/<int:pk>/comments", CommentsView.as_view()),
+    path('bbs/<int:pk>/', BbDetailView.as_view()),
+    path('bbs/', BbListView.as_view()),
 ]
