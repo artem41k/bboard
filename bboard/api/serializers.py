@@ -6,7 +6,7 @@ from main.models import Bb, Comment
 class BbSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bb
-        fields = ('id', 'title', 'content', 'price', 'created_at')
+        fields = ('id', 'title', 'content', 'price', 'created_at', 'image')
 
 
 class BbDetailSerializer(serializers.ModelSerializer):
