@@ -1,0 +1,9 @@
+django
+djangorestframework
+django-cors-headers
+django-simple-captcha
+django-bootstrap4
+django-cleanup
+easy-thumbnails
+uvicorn
+python-dotenv
