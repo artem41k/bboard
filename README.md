@@ -5,7 +5,7 @@ A practical project from a book "*Django 3.0. The practice of creating websites 
 
 I can't agree with all book author's methods and structure of this website, but I didn't change everything.
 
-The only thing I did was change all **FBV** *(Function-based Views)* that were in the book to **CBV** *(Class-based Views)*
+The only things I did were change all **FBV** *(Function-based Views)* that were in the book to **CBV** *(Class-based Views)* and follow PEP8
 
 Frontend (Angular): [bboard-front](https://github.com/artem41k/bboard-front)
 
