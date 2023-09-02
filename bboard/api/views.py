@@ -2,8 +2,9 @@ from rest_framework.generics import (ListAPIView, ListCreateAPIView,
                                      RetrieveAPIView)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .serializers import BbDetailSerializer, BbSerializer, CommentSerializer
-from main.models import Bb, Comment
+from .serializers import (BbDetailSerializer, BbSerializer, CommentSerializer,
+                          RubricSerializer)
+from main.models import Bb, Comment, SuperRubric
 
 
 class BbListView(ListAPIView):
@@ -22,3 +23,8 @@ class CommentsView(ListCreateAPIView):
 
     def get_queryset(self):
         return Comment.objects.filter(is_active=True, bb=self.kwargs['pk'])
+
+
+class RubricsListView(ListAPIView):
+    serializer_class = RubricSerializer
+    queryset = SuperRubric.objects.prefetch_related("rubrics")
